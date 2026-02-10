@@ -201,6 +201,129 @@ document.addEventListener('DOMContentLoaded', () => {
         timerInstruction.classList.remove('active-session');
     });
 
+    // ---------- Box Breathing Tool ----------
+    const breatheStart = document.getElementById('breatheStart');
+    const breatheStop = document.getElementById('breatheStop');
+    const breatheCircle = document.getElementById('breatheCircle');
+    const breathePhase = document.getElementById('breathePhase');
+    const breatheCount = document.getElementById('breatheCount');
+    const breatheCycleNum = document.getElementById('breatheCycleNum');
+    const breatheCycleTotal = document.getElementById('breatheCycleTotal');
+    const breatheRingProgress = document.querySelector('.breathe-ring-progress');
+
+    let breatheInterval = null;
+    let breatheRunning = false;
+    const BREATHE_PHASES = [
+        { name: 'Inhale', class: 'inhale', duration: 4 },
+        { name: 'Hold', class: 'hold-in', duration: 4 },
+        { name: 'Exhale', class: 'exhale', duration: 4 },
+        { name: 'Hold', class: 'hold-out', duration: 4 }
+    ];
+    const TOTAL_CYCLES = 4;
+    const CIRCUMFERENCE = 2 * Math.PI * 90; // matches SVG r=90
+
+    function runBreathingCycle() {
+        let cycle = 0;
+        let phaseIdx = 0;
+        let countdown = BREATHE_PHASES[0].duration;
+
+        breatheRunning = true;
+        breatheStart.style.display = 'none';
+        breatheStop.style.display = 'inline-flex';
+        breatheCycleNum.textContent = '1';
+
+        function updateRingProgress() {
+            const phase = BREATHE_PHASES[phaseIdx];
+            const progress = 1 - (countdown / phase.duration);
+            const totalPhasesDone = cycle * 4 + phaseIdx + progress;
+            const totalPhases = TOTAL_CYCLES * 4;
+            const overallProgress = totalPhasesDone / totalPhases;
+            const offset = CIRCUMFERENCE * (1 - overallProgress);
+            if (breatheRingProgress) {
+                breatheRingProgress.style.strokeDashoffset = offset;
+            }
+        }
+
+        function tick() {
+            if (!breatheRunning) return;
+
+            const phase = BREATHE_PHASES[phaseIdx];
+
+            // Update display
+            breatheCircle.className = 'breathe-circle ' + phase.class;
+            breathePhase.textContent = phase.name;
+            breatheCount.textContent = countdown;
+            updateRingProgress();
+
+            if (countdown <= 0) {
+                // Next phase
+                phaseIdx++;
+                if (phaseIdx >= BREATHE_PHASES.length) {
+                    phaseIdx = 0;
+                    cycle++;
+                    breatheCycleNum.textContent = Math.min(cycle + 1, TOTAL_CYCLES);
+
+                    if (cycle >= TOTAL_CYCLES) {
+                        // Done
+                        stopBreathing();
+                        breathePhase.textContent = 'Complete';
+                        breatheCount.textContent = '';
+                        breatheCircle.className = 'breathe-circle';
+                        if (breatheRingProgress) {
+                            breatheRingProgress.style.strokeDashoffset = '0';
+                        }
+                        return;
+                    }
+                }
+                countdown = BREATHE_PHASES[phaseIdx].duration;
+                // Immediately show next phase
+                const nextPhase = BREATHE_PHASES[phaseIdx];
+                breatheCircle.className = 'breathe-circle ' + nextPhase.class;
+                breathePhase.textContent = nextPhase.name;
+                breatheCount.textContent = countdown;
+                updateRingProgress();
+            }
+
+            countdown--;
+        }
+
+        tick(); // First tick immediately
+        breatheInterval = setInterval(tick, 1000);
+    }
+
+    function stopBreathing() {
+        breatheRunning = false;
+        clearInterval(breatheInterval);
+        breatheStart.style.display = 'inline-flex';
+        breatheStop.style.display = 'none';
+        breatheStart.textContent = 'Begin Box Breathing';
+    }
+
+    if (breatheStart) {
+        breatheStart.addEventListener('click', () => {
+            // Reset state
+            breatheCycleNum.textContent = '0';
+            if (breatheRingProgress) {
+                breatheRingProgress.style.strokeDashoffset = CIRCUMFERENCE;
+            }
+            breatheCircle.className = 'breathe-circle';
+            runBreathingCycle();
+        });
+    }
+
+    if (breatheStop) {
+        breatheStop.addEventListener('click', () => {
+            stopBreathing();
+            breathePhase.textContent = 'Ready';
+            breatheCount.textContent = '';
+            breatheCycleNum.textContent = '0';
+            breatheCircle.className = 'breathe-circle';
+            if (breatheRingProgress) {
+                breatheRingProgress.style.strokeDashoffset = CIRCUMFERENCE;
+            }
+        });
+    }
+
     // ---------- Scroll reveal animations ----------
     const observerOptions = {
         threshold: 0.1,
@@ -218,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add fade-in class to elements
     const animateElements = document.querySelectorAll(
-        '.brain-card, .technique-card, .testimonial-card, .faq-item, .routine-card, .path-quote'
+        '.brain-card, .technique-card, .testimonial-card, .faq-item, .routine-card, .path-quote, .who-category, .myth-card, .anywhere-card, .week-day'
     );
 
     animateElements.forEach((el, i) => {
