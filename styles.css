@@ -307,6 +307,15 @@ h3 { font-size: clamp(1.2rem, 2vw, 1.5rem); }
     border-radius: 100px;
 }
 
+.hero-tagline {
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
 .hero h1 {
     margin-bottom: 24px;
 }
@@ -995,6 +1004,14 @@ h3 { font-size: clamp(1.2rem, 2vw, 1.5rem); }
     color: var(--success);
 }
 
+.cta-closer {
+    margin-top: 48px;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
 /* Protocol cards */
 .cta-protocols h3 {
     font-size: 1.1rem;
@@ -1087,6 +1104,29 @@ h3 { font-size: clamp(1.2rem, 2vw, 1.5rem); }
 .footer-bottom p {
     font-size: 0.85rem;
     color: var(--text-muted);
+}
+
+/* ---------- Manifesto Divider ---------- */
+.manifesto {
+    padding: 64px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.manifesto-content {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.manifesto-content p {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+}
+
+.manifesto-content strong {
+    color: var(--text);
+    font-weight: 700;
 }
 
 /* ---------- Who's Doing This ---------- */
